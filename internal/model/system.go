@@ -8,6 +8,4 @@ type System struct {
 	Metadata SystemMetadata `json:"metadata"`
 
 	Objects []Object `json:"objects"`
-
-	Binaries []Binary `json:"binaries"`
 }

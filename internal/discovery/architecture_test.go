@@ -42,3 +42,28 @@ func TestDiscoveryDoesNotDependOnLegacyPackageModel(t *testing.T) {
 		}
 	}
 }
+
+func TestEngineDoesNotKnowConcreteDiscoveryImplementations(t *testing.T) {
+	content, err := os.ReadFile("engine.go")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	source := string(content)
+
+	for _, forbidden := range []string{
+		`"executable"`,
+		"model.Binary",
+		"Binary{",
+		"BinaryCollector",
+		"defaultCollectors",
+		"binariesFromObjects",
+	} {
+		if strings.Contains(source, forbidden) {
+			t.Errorf(
+				"engine.go contains concrete discovery knowledge %q",
+				forbidden,
+			)
+		}
+	}
+}

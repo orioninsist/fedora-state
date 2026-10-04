@@ -2,17 +2,25 @@ package discovery
 
 import "fedora-state/internal/model"
 
-type Engine struct{}
+type Engine struct {
+	collectors []Collector
+}
 
-func New() Engine {
-	return Engine{}
+func NewWithCollectors(collectors ...Collector) Engine {
+	return Engine{
+		collectors: collectors,
+	}
 }
 
 func (e Engine) Analyze() model.System {
 	system := System()
 
-	system.Binaries = DiscoverBinaries()
-	system.Objects = DiscoverObjects(system.Binaries)
+	for _, collector := range e.collectors {
+		system.Objects = append(
+			system.Objects,
+			collector.Collect()...,
+		)
+	}
 
 	return system
 }

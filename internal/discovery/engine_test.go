@@ -16,7 +16,6 @@ func TestAnalyzeCurrentSystem(t *testing.T) {
 	t.Logf("version_id=%q", system.Metadata.VersionID)
 	t.Logf("kernel=%q", system.Metadata.Kernel)
 	t.Logf("hostname=%q", system.Metadata.Hostname)
-	t.Logf("binaries=%d", len(system.Binaries))
 	t.Logf("objects=%d", len(system.Objects))
 
 	if system.OS == "" {
@@ -27,16 +26,8 @@ func TestAnalyzeCurrentSystem(t *testing.T) {
 		t.Error("architecture is empty")
 	}
 
-	if len(system.Binaries) == 0 {
-		t.Error("no binaries discovered")
-	}
-
-	if len(system.Objects) != len(system.Binaries) {
-		t.Errorf(
-			"objects=%d binaries=%d",
-			len(system.Objects),
-			len(system.Binaries),
-		)
+	if len(system.Objects) == 0 {
+		t.Error("no objects discovered")
 	}
 }
 
