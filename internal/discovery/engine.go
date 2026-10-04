@@ -7,9 +7,24 @@ type Engine struct {
 }
 
 func NewWithCollectors(collectors ...Collector) Engine {
-	return Engine{
-		collectors: collectors,
+	engine := Engine{}
+
+	for _, collector := range collectors {
+		engine.Register(collector)
 	}
+
+	return engine
+}
+
+func (e *Engine) Register(collector Collector) {
+	if collector == nil {
+		return
+	}
+
+	e.collectors = append(
+		e.collectors,
+		collector,
+	)
 }
 
 func (e Engine) Analyze() model.System {

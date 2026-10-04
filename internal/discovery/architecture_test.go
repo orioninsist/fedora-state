@@ -58,6 +58,8 @@ func TestEngineDoesNotKnowConcreteDiscoveryImplementations(t *testing.T) {
 		"BinaryCollector",
 		"defaultCollectors",
 		"binariesFromObjects",
+		"switch collector",
+		"switch provider",
 	} {
 		if strings.Contains(source, forbidden) {
 			t.Errorf(

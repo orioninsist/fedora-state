@@ -89,3 +89,59 @@ func TestEngineCanRunWithNoCollectors(t *testing.T) {
 		)
 	}
 }
+
+func TestEngineRegistersCollectorsAtRuntime(t *testing.T) {
+	engine := NewWithCollectors()
+
+	first := model.Object{
+		Name: "first",
+		Type: "runtime",
+	}
+
+	second := model.Object{
+		Name: "second",
+		Type: "runtime",
+	}
+
+	engine.Register(
+		testCollector{
+			objects: []model.Object{first},
+		},
+	)
+
+	engine.Register(
+		testCollector{
+			objects: []model.Object{second},
+		},
+	)
+
+	system := engine.Analyze()
+
+	want := []model.Object{
+		first,
+		second,
+	}
+
+	if !reflect.DeepEqual(system.Objects, want) {
+		t.Fatalf(
+			"objects differ\n got: %#v\nwant: %#v",
+			system.Objects,
+			want,
+		)
+	}
+}
+
+func TestEngineIgnoresNilCollector(t *testing.T) {
+	engine := NewWithCollectors()
+
+	engine.Register(nil)
+
+	system := engine.Analyze()
+
+	if len(system.Objects) != 0 {
+		t.Fatalf(
+			"got unexpected objects: %#v",
+			system.Objects,
+		)
+	}
+}
