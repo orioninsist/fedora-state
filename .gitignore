@@ -1,0 +1,17 @@
+# binaries
+fedora-state
+*.bin
+
+# generated state
+state/*.json
+
+# generated reports
+reports/*.md
+reports/*.json
+
+# editor
+.vscode/
+.idea/
+
+# temp
+*.tmp
