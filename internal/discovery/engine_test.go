@@ -6,7 +6,7 @@ import (
 )
 
 func TestAnalyzeCurrentSystem(t *testing.T) {
-	system := New().Analyze()
+	system := NewWithCollectors(BinaryCollector{}).Analyze()
 
 	t.Logf("os=%s", system.OS)
 	t.Logf("architecture=%s", system.Architecture)
@@ -32,8 +32,8 @@ func TestAnalyzeCurrentSystem(t *testing.T) {
 }
 
 func TestAnalyzeIsDeterministic(t *testing.T) {
-	first := New().Analyze()
-	second := New().Analyze()
+	first := NewWithCollectors(BinaryCollector{}).Analyze()
+	second := NewWithCollectors(BinaryCollector{}).Analyze()
 
 	if !reflect.DeepEqual(first, second) {
 		t.Error("consecutive discovery results differ")
