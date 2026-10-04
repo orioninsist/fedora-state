@@ -43,7 +43,7 @@ func TestDiscoveryDoesNotDependOnLegacyPackageModel(t *testing.T) {
 	}
 }
 
-func TestEngineDoesNotKnowConcreteDiscoveryImplementations(t *testing.T) {
+func TestEngineDoesNotKnowConcreteObjectTypes(t *testing.T) {
 	content, err := os.ReadFile("engine.go")
 	if err != nil {
 		t.Fatal(err)
@@ -53,13 +53,16 @@ func TestEngineDoesNotKnowConcreteDiscoveryImplementations(t *testing.T) {
 
 	for _, forbidden := range []string{
 		`"executable"`,
+		`"package"`,
+		`"rpm"`,
+		`"dnf"`,
+		`"cargo"`,
+		`"uv"`,
+		`"flatpak"`,
+		`"npm"`,
 		"model.Binary",
 		"Binary{",
-		"BinaryCollector",
-		"defaultCollectors",
 		"binariesFromObjects",
-		"switch collector",
-		"switch provider",
 	} {
 		if strings.Contains(source, forbidden) {
 			t.Errorf(

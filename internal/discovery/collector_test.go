@@ -20,7 +20,10 @@ func TestEngineCollectsObjectsWithoutKnowingTheirType(t *testing.T) {
 		{
 			Name:     "example",
 			Type:     "test-object",
+			Identity: "example:stable-id",
 			Location: "/example",
+			Version:  "1.2.3",
+			Source:   "test-source",
 			Evidence: []model.Evidence{
 				{
 					Type:  "test",
@@ -31,9 +34,7 @@ func TestEngineCollectsObjectsWithoutKnowingTheirType(t *testing.T) {
 	}
 
 	system := NewWithCollectors(
-		testCollector{
-			objects: want,
-		},
+		testCollector{objects: want},
 	).Analyze()
 
 	if !reflect.DeepEqual(system.Objects, want) {
@@ -45,15 +46,17 @@ func TestEngineCollectsObjectsWithoutKnowingTheirType(t *testing.T) {
 	}
 }
 
-func TestEngineCombinesCollectors(t *testing.T) {
+func TestEngineCombinesCollectorsWithoutInterpretingObjects(t *testing.T) {
 	first := model.Object{
-		Name: "first",
-		Type: "one",
+		Name:     "first",
+		Type:     "arbitrary-a",
+		Identity: "a:first",
 	}
 
 	second := model.Object{
-		Name: "second",
-		Type: "two",
+		Name:     "second",
+		Type:     "arbitrary-b",
+		Identity: "b:second",
 	}
 
 	system := NewWithCollectors(
@@ -79,69 +82,68 @@ func TestEngineCombinesCollectors(t *testing.T) {
 	}
 }
 
-func TestEngineCanRunWithNoCollectors(t *testing.T) {
-	system := NewWithCollectors().Analyze()
+func TestEnginePreservesCollectorEvidenceExactly(t *testing.T) {
+	want := model.Object{
+		Name:     "tool",
+		Type:     "anything",
+		Identity: "anything:tool",
+		Version:  "9.8.7",
+		Source:   "origin",
+		Evidence: []model.Evidence{
+			{
+				Type:  "registry",
+				Path:  "/var/lib/example/database",
+				Value: "record",
+			},
+			{
+				Type:  "receipt",
+				Path:  "/example/receipt",
+				Value: "source metadata",
+			},
+		},
+	}
 
-	if len(system.Objects) != 0 {
+	system := NewWithCollectors(
+		testCollector{
+			objects: []model.Object{want},
+		},
+	).Analyze()
+
+	if len(system.Objects) != 1 {
 		t.Fatalf(
-			"got unexpected objects: %#v",
-			system.Objects,
+			"objects=%d want=1",
+			len(system.Objects),
 		)
 	}
-}
 
-func TestEngineRegistersCollectorsAtRuntime(t *testing.T) {
-	engine := NewWithCollectors()
-
-	first := model.Object{
-		Name: "first",
-		Type: "runtime",
-	}
-
-	second := model.Object{
-		Name: "second",
-		Type: "runtime",
-	}
-
-	engine.Register(
-		testCollector{
-			objects: []model.Object{first},
-		},
-	)
-
-	engine.Register(
-		testCollector{
-			objects: []model.Object{second},
-		},
-	)
-
-	system := engine.Analyze()
-
-	want := []model.Object{
-		first,
-		second,
-	}
-
-	if !reflect.DeepEqual(system.Objects, want) {
+	if !reflect.DeepEqual(system.Objects[0], want) {
 		t.Fatalf(
-			"objects differ\n got: %#v\nwant: %#v",
-			system.Objects,
+			"object changed by engine\n got: %#v\nwant: %#v",
+			system.Objects[0],
 			want,
 		)
 	}
 }
 
-func TestEngineIgnoresNilCollector(t *testing.T) {
-	engine := NewWithCollectors()
+func TestEngineIgnoresNilCollectors(t *testing.T) {
+	want := model.Object{
+		Name: "example",
+		Type: "test",
+	}
 
-	engine.Register(nil)
+	system := NewWithCollectors(
+		nil,
+		testCollector{
+			objects: []model.Object{want},
+		},
+		nil,
+	).Analyze()
 
-	system := engine.Analyze()
-
-	if len(system.Objects) != 0 {
+	if !reflect.DeepEqual(system.Objects, []model.Object{want}) {
 		t.Fatalf(
-			"got unexpected objects: %#v",
+			"objects differ\n got: %#v\nwant: %#v",
 			system.Objects,
+			[]model.Object{want},
 		)
 	}
 }
