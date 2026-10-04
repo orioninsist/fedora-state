@@ -12,4 +12,12 @@ type Package struct {
 	Manager string `json:"manager"`
 
 	Source string `json:"source,omitempty"`
+
+	Repository string `json:"repository,omitempty"`
+
+	InstallMethod string `json:"install_method,omitempty"`
+
+	BinaryPath string `json:"binary_path,omitempty"`
+
+	Verified bool `json:"verified"`
 }

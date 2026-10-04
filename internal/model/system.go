@@ -1,13 +1,13 @@
 package model
 
-import "time"
-
-type SystemState struct {
-	GeneratedAt time.Time `json:"generated_at"`
-
+type System struct {
 	OS string `json:"os"`
 
-	Sources []string `json:"sources"`
+	Architecture string `json:"architecture"`
 
-	Packages []Package `json:"packages"`
+	Metadata SystemMetadata `json:"metadata"`
+
+	Objects []Object `json:"objects"`
+
+	Binaries []Binary `json:"binaries"`
 }
