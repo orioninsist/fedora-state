@@ -20,10 +20,11 @@ func (e Engine) Analyze() model.System {
 			continue
 		}
 
-		system.Objects = append(
-			system.Objects,
-			collector.Collect()...,
-		)
+		collection := collector.Collect()
+		system.Objects = append(system.Objects, collection.Objects...)
+		if collection.Err != nil {
+			system.Diagnostics = append(system.Diagnostics, model.Diagnostic{Message: collection.Err.Error()})
+		}
 	}
 
 	return system

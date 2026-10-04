@@ -79,7 +79,7 @@ func TestRPMCollectorUsesPackageDatabaseQuery(t *testing.T) {
 		},
 	}
 
-	objects := collector.Collect()
+	objects := collector.Collect().Objects
 
 	if gotName != "rpm" {
 		t.Fatalf("command=%q want rpm", gotName)
@@ -107,7 +107,7 @@ func TestRPMCollectorReturnsNoObjectsWhenRPMUnavailable(t *testing.T) {
 		},
 	}
 
-	if got := collector.Collect(); len(got) != 0 {
-		t.Fatalf("got unexpected objects: %#v", got)
+	if got := collector.Collect(); got.Err == nil {
+		t.Fatalf("expected collection error, got: %#v", got)
 	}
 }

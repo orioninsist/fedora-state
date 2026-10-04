@@ -1,6 +1,7 @@
 package discovery
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 
@@ -9,10 +10,11 @@ import (
 
 type testCollector struct {
 	objects []model.Object
+	err     error
 }
 
-func (collector testCollector) Collect() []model.Object {
-	return collector.objects
+func (collector testCollector) Collect() Collection {
+	return Collection{Objects: collector.objects, Err: collector.err}
 }
 
 func TestEngineCollectsObjectsWithoutKnowingTheirType(t *testing.T) {
@@ -145,5 +147,16 @@ func TestEngineIgnoresNilCollectors(t *testing.T) {
 			system.Objects,
 			[]model.Object{want},
 		)
+	}
+}
+
+func TestEnginePreservesCollectorErrorsAsDiagnostics(t *testing.T) {
+	want := model.Object{Name: "survivor", Type: "test"}
+	system := NewWithCollectors(testCollector{err: errors.New("collection failed")}, testCollector{objects: []model.Object{want}}).Analyze()
+	if !reflect.DeepEqual(system.Objects, []model.Object{want}) {
+		t.Fatalf("objects differ: %#v", system.Objects)
+	}
+	if len(system.Diagnostics) != 1 || system.Diagnostics[0].Message != "collection failed" {
+		t.Fatalf("diagnostics differ: %#v", system.Diagnostics)
 	}
 }

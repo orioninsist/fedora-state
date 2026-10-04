@@ -19,7 +19,7 @@ func NewRPMCollector() RPMCollector {
 	}
 }
 
-func (collector RPMCollector) Collect() []model.Object {
+func (collector RPMCollector) Collect() Collection {
 	command := collector.command
 	if command == nil {
 		command = NewRPMCollector().command
@@ -32,10 +32,10 @@ func (collector RPMCollector) Collect() []model.Object {
 		"%{NAME}\\t%{VERSION}\\t%{RELEASE}\\t%{ARCH}\\t%{INSTALLTIME}\\t%{VENDOR}\\t%{PACKAGER}\\t%{SOURCERPM}\\n",
 	)
 	if err != nil {
-		return nil
+		return Collection{Err: err}
 	}
 
-	return parseRPMObjects(string(output))
+	return Collection{Objects: parseRPMObjects(string(output))}
 }
 
 func parseRPMObjects(input string) []model.Object {

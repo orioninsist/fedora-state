@@ -8,4 +8,6 @@ type System struct {
 	Metadata SystemMetadata `json:"metadata"`
 
 	Objects []Object `json:"objects"`
+
+	Diagnostics []Diagnostic `json:"diagnostics,omitempty"`
 }
