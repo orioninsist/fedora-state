@@ -3,7 +3,7 @@ fedora-state
 *.bin
 
 # generated state
-state/*.json
+state/
 
 # generated reports
 reports/*.md
