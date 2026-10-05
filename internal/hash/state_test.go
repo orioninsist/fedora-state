@@ -49,7 +49,7 @@ func TestStateIgnoresObjectAndEvidenceOrder(t *testing.T) {
 				Identity: "cargo:beta:1.0:registry",
 				Evidence: []model.Evidence{
 					{Type: "source", Value: "registry"},
-					{Type: "binary", Value: "beta"},
+					{Type: "executable_name", Value: "beta"},
 				},
 			},
 			{

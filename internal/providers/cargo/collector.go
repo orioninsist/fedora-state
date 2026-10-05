@@ -71,7 +71,7 @@ func parseObjects(input []byte) ([]model.Object, error) {
 			evidence = append(evidence, model.Evidence{Type: "target", Value: item.Target})
 		}
 		for _, bin := range item.Bins {
-			evidence = append(evidence, model.Evidence{Type: "binary", Value: bin})
+			evidence = append(evidence, model.Evidence{Type: "executable_name", Value: bin})
 		}
 
 		objects = append(objects, model.Object{

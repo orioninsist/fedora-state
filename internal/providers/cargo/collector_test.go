@@ -26,6 +26,17 @@ func TestParseObjects(t *testing.T) {
 	if len(object.Evidence) != 4 {
 		t.Fatalf("evidence=%+v", object.Evidence)
 	}
+
+	foundExecutable := false
+	for _, evidence := range object.Evidence {
+		if evidence.Type == "executable_name" &&
+			evidence.Value == "wl-screenrec" {
+			foundExecutable = true
+		}
+	}
+	if !foundExecutable {
+		t.Fatalf("missing executable_name evidence: %+v", object.Evidence)
+	}
 }
 
 func TestParseObjectsRejectsInvalidJSON(t *testing.T) {

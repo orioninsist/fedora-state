@@ -78,7 +78,7 @@ func parseReceipt(input []byte) ([]model.Object, error) {
 
 	if installPath != "" {
 		evidence = append(evidence, model.Evidence{
-			Type:  "binary",
+			Type:  "executable_path",
 			Value: installPath,
 		})
 	}

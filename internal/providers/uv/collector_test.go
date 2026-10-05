@@ -36,6 +36,17 @@ entrypoints = [
 	if len(object.Evidence) != 3 {
 		t.Fatalf("evidence=%+v", object.Evidence)
 	}
+
+	foundExecutable := false
+	for _, evidence := range object.Evidence {
+		if evidence.Type == "executable_path" &&
+			evidence.Value == "/home/murat/.local/bin/gitfleet" {
+			foundExecutable = true
+		}
+	}
+	if !foundExecutable {
+		t.Fatalf("missing executable_path evidence: %+v", object.Evidence)
+	}
 }
 
 func TestCollectorReadsReceipt(t *testing.T) {
