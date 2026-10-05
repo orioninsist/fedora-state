@@ -7,13 +7,12 @@ import (
 
 	"fedora-state/internal/discovery"
 	"fedora-state/internal/hash"
-	"fedora-state/internal/manifest"
 	"fedora-state/internal/persistence"
-	"fedora-state/internal/plan"
 	"fedora-state/internal/providers/cargo"
 	"fedora-state/internal/providers/rpm"
 	"fedora-state/internal/providers/uv"
-	"fedora-state/internal/report"
+
+	"fedora-state/cmd/fedora-state/commands"
 )
 
 func main() {
@@ -61,51 +60,20 @@ func main() {
 
 	format := "text"
 	if len(os.Args) > 1 {
-		format = strings.TrimPrefix(os.Args[1], "--format=")
+		format = commands.CommandFromArgs([]string{
+			strings.TrimPrefix(os.Args[1], "--format="),
+		})
 	}
 
-	if format == "plan" || format == "apply" {
-		current := manifest.FromSystem(system)
-		old, err := persistence.LoadManifest(
-			filepath.Join(home, ".local", "state", "fedora-state-manifest.json"),
-		)
-		if err != nil && !os.IsNotExist(err) {
-			panic(err)
-		}
-
-		value := plan.Build(old, current)
-
-		if format == "apply" {
-			result := applyPlan(value)
-			if err := persistence.SaveManifest(
-				filepath.Join(home, ".local", "state", "fedora-state-manifest.json"),
-				current,
-			); err != nil {
-				panic(err)
-			}
-			_ = result
-			return
-		}
-
-		if err := plan.WriteJSON(os.Stdout, value); err != nil {
-			panic(err)
-		}
-		return
+	if err := commands.Dispatch(
+		format,
+		commands.Context{
+			Home:   home,
+			System: system,
+		},
+		realHandlers(),
+	); err != nil {
+		panic(err)
 	}
 
-	switch format {
-	case "json":
-		if err := report.WriteJSON(os.Stdout, system); err != nil {
-			panic(err)
-		}
-	case "manifest":
-		state := manifest.FromSystem(system)
-		if err := manifest.WriteJSON(os.Stdout, state); err != nil {
-			panic(err)
-		}
-	default:
-		if err := report.WriteText(os.Stdout, system); err != nil {
-			panic(err)
-		}
-	}
 }
