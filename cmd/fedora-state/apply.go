@@ -6,5 +6,5 @@ import (
 )
 
 func applyPlan(value plan.Plan) (executor.Result, error) {
-	return executor.Run(value), nil
+	return executor.Run(value)
 }

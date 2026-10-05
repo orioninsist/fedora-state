@@ -6,8 +6,8 @@ import (
 	"fedora-state/internal/plan"
 )
 
-func TestRunExecutesPlan(t *testing.T) {
-	result := Run(plan.Plan{
+func TestRun(t *testing.T) {
+	result, err := Run(plan.Plan{
 		Actions: []plan.Action{
 			{
 				Type:     "add",
@@ -15,6 +15,10 @@ func TestRunExecutesPlan(t *testing.T) {
 			},
 		},
 	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if result.Executed != 1 {
 		t.Fatalf("executed=%d", result.Executed)
