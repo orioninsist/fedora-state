@@ -7,7 +7,7 @@ import (
 )
 
 func TestApplyPlan(t *testing.T) {
-	result := applyPlan(plan.Plan{
+	result, err := applyPlan(plan.Plan{
 		Actions: []plan.Action{
 			{
 				Type:     "add",
@@ -15,6 +15,10 @@ func TestApplyPlan(t *testing.T) {
 			},
 		},
 	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if result.Executed != 1 {
 		t.Fatalf("executed=%d", result.Executed)
