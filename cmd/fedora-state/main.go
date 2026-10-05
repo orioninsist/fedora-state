@@ -68,6 +68,7 @@ func main() {
 	if err := commands.Dispatch(
 		format,
 		commands.Context{
+			Args:   os.Args[2:],
 			Home:   home,
 			System: system,
 		},
