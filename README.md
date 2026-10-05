@@ -26,7 +26,7 @@ Implemented:
 - executor engine abstraction
 - DNF backend integration
 - dry-run execution path
-- text and JSON reporting
+- text, JSON, and Markdown reporting
 - error propagation through execution layers
 
 Validation:
@@ -52,26 +52,47 @@ git clone https://github.com/orioninsist/fedora-state.git
 cd fedora-state
 ```
 
-## First Run
-
-During development, run directly with Go:
+Build the user-local binary:
 
 ```bash
-go run ./cmd/fedora-state
+mkdir -p ~/.local/bin
+
+go build \
+  -o ~/.local/bin/fedora-state \
+  ./cmd/fedora-state
+
+chmod 755 ~/.local/bin/fedora-state
 ```
 
-Normal installed usage:
+Add `~/.local/bin` to PATH if needed:
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Verify:
+
+```bash
+fedora-state --help
+```
+
+`~/.local/bin` is used intentionally because it keeps the application inside the user environment and makes rebuilding after a system reinstall simple.
+
+## First Run
+
+Discover the current system:
 
 ```bash
 fedora-state
 ```
 
-The first command only discovers your current system. It does not modify anything.
+The discovery command does not modify the system.
 
 Example output:
 
 ```text
-os=linux architecture=amd64 distribution=Fedora Linux objects=4233 diagnostics=0
+os=linux architecture=amd64 distribution=Fedora Linux objects=4234 diagnostics=0
 ```
 
 ## Command Usage
@@ -81,37 +102,31 @@ The program has one command with different output modes.
 ### Text report
 
 ```bash
-go run ./cmd/fedora-state --format=text
-```
-
-or after installation:
-
-```bash
 fedora-state --format=text
 ```
 
 ### JSON export
 
-Create a machine-readable snapshot:
+```bash
+fedora-state --format=json > state.json
+```
+
+### Markdown report
 
 ```bash
-go run ./cmd/fedora-state --format=json > state.json
+fedora-state --format=markdown > report.md
 ```
 
 ### Manifest generation
 
-Create the current system manifest:
-
 ```bash
-go run ./cmd/fedora-state --format=manifest > manifest.json
+fedora-state --format=manifest > manifest.json
 ```
 
 ### Plan generation
 
-See what changes would be required:
-
 ```bash
-go run ./cmd/fedora-state --format=plan > plan.json
+fedora-state --format=plan > plan.json
 ```
 
 Always review the plan before applying changes.
@@ -124,19 +139,16 @@ Apply requires administrator privileges because it can call system package opera
 sudo fedora-state --format=apply
 ```
 
-Recommended workflow:
+## Recommended Workflow
 
 ```bash
-1. Discover current state
+# 1. Discover current state
+fedora-state --format=json > state.json
 
-go run ./cmd/fedora-state --format=json > state.json
+# 2. Generate and inspect plan
+fedora-state --format=plan > plan.json
 
-2. Generate and inspect plan
-
-go run ./cmd/fedora-state --format=plan > plan.json
-
-3. Apply only after review
-
+# 3. Apply only after review
 sudo fedora-state --format=apply
 ```
 
@@ -180,8 +192,6 @@ internal/executor
 ```
 
 ## Development
-
-The project is written in Go.
 
 Run tests:
 
