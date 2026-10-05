@@ -6,4 +6,5 @@ const (
 	Plan     = "plan"
 	Apply    = "apply"
 	Manifest = "manifest"
+	Snapshot = "snapshot"
 )
