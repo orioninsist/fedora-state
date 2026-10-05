@@ -7,7 +7,7 @@ import (
 	"fedora-state/internal/persistence"
 )
 
-func Snapshot(ctx Context) error {
+func WriteSnapshot(ctx Context) error {
 
 	dir := filepath.Join(
 		ctx.Home,
