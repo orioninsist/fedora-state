@@ -9,4 +9,5 @@ const (
 	Snapshot = "snapshot"
 	Snapshots = "snapshots"
 	Diff = "diff"
+	Restore = "restore"
 )
