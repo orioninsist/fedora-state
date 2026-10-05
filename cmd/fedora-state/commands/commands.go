@@ -12,6 +12,7 @@ func Available() []Command {
 		{Name: "snapshot"},
 		{Name: "snapshots"},
 		{Name: "diff"},
+		{Name: "restore"},
 		{Name: "version"},
 		{Name: "help"},
 	}
