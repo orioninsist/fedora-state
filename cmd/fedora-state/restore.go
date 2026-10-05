@@ -40,6 +40,13 @@ func runRestore(
 		target,
 	)
 
+	if !restoreApplyRequested(ctx.Args) {
+		return plan.WriteJSON(
+			os.Stdout,
+			value,
+		)
+	}
+
 	engine := newExecutorEngine()
 
 	result, err := engine.Apply(value)
@@ -54,4 +61,17 @@ func runRestore(
 	)
 
 	return nil
+}
+
+func restoreApplyRequested(
+	args []string,
+) bool {
+
+	for _, arg := range args {
+		if arg == "--apply" {
+			return true
+		}
+	}
+
+	return false
 }
