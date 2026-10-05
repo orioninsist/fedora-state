@@ -2,19 +2,21 @@
 
 Fedora system state discovery and reproducibility engine.
 
-## Purpose
+`fedora-state` discovers the software state of a Fedora machine and produces a reproducible model that can be inspected, exported, and applied on another Fedora installation.
 
-`fedora-state` discovers the software state of a Fedora system and creates a reproducible model that can be inspected and applied on another Fedora installation.
+## What it does
 
 It answers:
 
-- What is installed on this system?
-- Which packages and tools exist?
+- What software exists on this system?
+- Which packages and tools are installed?
 - How can this environment be recreated?
+
+The goal is reproducible system state, not a traditional backup.
 
 ## Current Status
 
-The core architecture is complete and checkpointed.
+The core architecture is implemented and checkpointed.
 
 Implemented:
 
@@ -27,7 +29,7 @@ Implemented:
 - DNF backend integration
 - dry-run execution path
 - text, JSON, and Markdown reporting
-- error propagation through execution layers
+- layered error propagation
 
 Validation:
 
@@ -37,8 +39,6 @@ go vet ./...
 ```
 
 ## Installation
-
-### From source
 
 Requirements:
 
@@ -52,23 +52,13 @@ git clone https://github.com/orioninsist/fedora-state.git
 cd fedora-state
 ```
 
-Build the user-local binary:
+Build:
 
 ```bash
 mkdir -p ~/.local/bin
 
-go build \
-  -o ~/.local/bin/fedora-state \
-  ./cmd/fedora-state
-
+go build -o ~/.local/bin/fedora-state ./cmd/fedora-state
 chmod 755 ~/.local/bin/fedora-state
-```
-
-Add `~/.local/bin` to PATH if needed:
-
-```bash
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
 ```
 
 Verify:
@@ -77,63 +67,59 @@ Verify:
 fedora-state --help
 ```
 
-`~/.local/bin` is used intentionally because it keeps the application inside the user environment and makes rebuilding after a system reinstall simple.
+Using `~/.local/bin` keeps the binary inside the user environment and makes rebuilding after a reinstall simple.
 
-## First Run
+## Usage
 
-Discover the current system:
+Discover current system state:
 
 ```bash
 fedora-state
 ```
 
-The discovery command does not modify the system.
+The discovery operation does not modify the system.
 
-Example output:
+Example:
 
 ```text
 os=linux architecture=amd64 distribution=Fedora Linux objects=4234 diagnostics=0
 ```
 
-## Command Usage
+## Output Modes
 
-The program has one command with different output modes.
-
-### Text report
+Text report:
 
 ```bash
 fedora-state --format=text
 ```
 
-### JSON export
+JSON export:
 
 ```bash
 fedora-state --format=json > state.json
 ```
 
-### Markdown report
+Markdown report:
 
 ```bash
 fedora-state --format=markdown > report.md
 ```
 
-### Manifest generation
+Manifest:
 
 ```bash
 fedora-state --format=manifest > manifest.json
 ```
 
-### Plan generation
+Plan:
 
 ```bash
 fedora-state --format=plan > plan.json
 ```
 
-Always review the plan before applying changes.
+Always review generated plans before applying changes.
 
-### Apply changes
-
-Apply requires administrator privileges because it can call system package operations:
+Apply:
 
 ```bash
 sudo fedora-state --format=apply
@@ -142,19 +128,19 @@ sudo fedora-state --format=apply
 ## Recommended Workflow
 
 ```bash
-# 1. Discover current state
+# Discover
 fedora-state --format=json > state.json
 
-# 2. Generate and inspect plan
+# Create and review plan
 fedora-state --format=plan > plan.json
 
-# 3. Apply only after review
+# Apply after review
 sudo fedora-state --format=apply
 ```
 
-## Important
+## Scope
 
-`fedora-state` is not a backup tool.
+`fedora-state` manages software state only.
 
 It does not manage:
 
@@ -162,8 +148,6 @@ It does not manage:
 - personal configuration
 - user data
 - accounts
-
-It focuses on reproducible software state.
 
 ## Architecture
 
