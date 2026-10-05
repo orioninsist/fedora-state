@@ -6,5 +6,5 @@ func Build(
 	old manifest.Manifest,
 	current manifest.Manifest,
 ) Plan {
-	return Diff(old, current)
+	return Normalize(Diff(old, current))
 }
