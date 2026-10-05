@@ -29,7 +29,7 @@ func runRestore(
 		return err
 	}
 
-	target := manifest.FromSystem(snapshot)
+	target := manifest.FromSnapshot(snapshot)
 
 	current := manifest.FromSystem(
 		ctx.System,
