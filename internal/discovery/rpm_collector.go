@@ -29,7 +29,7 @@ func (collector RPMCollector) Collect() Collection {
 		"rpm",
 		"-qa",
 		"--qf",
-		"%{NAME}\\t%{VERSION}\\t%{RELEASE}\\t%{ARCH}\\t%{INSTALLTIME}\\t%{VENDOR}\\t%{PACKAGER}\\t%{SOURCERPM}\\n",
+		"%{NAME}\\t%{EPOCHNUM}\\t%{VERSION}\\t%{RELEASE}\\t%{ARCH}\\t%{INSTALLTIME}\\t%{VENDOR}\\t%{PACKAGER}\\t%{SOURCERPM}\\n",
 	)
 	if err != nil {
 		return Collection{Err: err}
@@ -47,18 +47,19 @@ func parseRPMObjects(input string) []model.Object {
 		}
 
 		fields := strings.Split(line, "\t")
-		if len(fields) != 8 {
+		if len(fields) != 9 {
 			continue
 		}
 
 		name := fields[0]
-		version := fields[1]
-		release := fields[2]
-		architecture := fields[3]
-		installTime := fields[4]
-		vendor := fields[5]
-		packager := fields[6]
-		sourceRPM := fields[7]
+		epoch := fields[1]
+		version := fields[2]
+		release := fields[3]
+		architecture := fields[4]
+		installTime := fields[5]
+		vendor := fields[6]
+		packager := fields[7]
+		sourceRPM := fields[8]
 
 		if name == "" || version == "" {
 			continue
@@ -67,6 +68,14 @@ func parseRPMObjects(input string) []model.Object {
 		versionID := version
 		if release != "" && release != "(none)" {
 			versionID += "-" + release
+		}
+		if epoch != "" && epoch != "0" && epoch != "(none)" {
+			versionID = epoch + ":" + versionID
+		}
+
+		identityEpoch := epoch
+		if identityEpoch == "" || identityEpoch == "(none)" {
+			identityEpoch = "0"
 		}
 
 		evidence := []model.Evidence{
@@ -91,7 +100,7 @@ func parseRPMObjects(input string) []model.Object {
 		result = append(result, model.Object{
 			Name:     name,
 			Type:     "package",
-			Identity: "rpm:" + name + ":" + architecture,
+			Identity: "rpm:" + name + ":" + identityEpoch + ":" + version + "-" + release + ":" + architecture,
 			Version:  versionID,
 			Evidence: evidence,
 		})

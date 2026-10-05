@@ -10,8 +10,8 @@ import (
 
 func TestParseRPMObjects(t *testing.T) {
 	input := "" +
-		"bash\t5.3.0\t2.fc44\tx86_64\t100\tFedora Project\tFedora Project\tbash-5.3.0-2.fc44.src.rpm\n" +
-		"example\t1.4.0\t3.fc44\tnoarch\t200\tExample Vendor\tExample Packager\texample-1.4.0-3.fc44.src.rpm\n"
+		"bash\t0\t5.3.0\t2.fc44\tx86_64\t100\tFedora Project\tFedora Project\tbash-5.3.0-2.fc44.src.rpm\n" +
+		"example\t2\t1.4.0\t3.fc44\tnoarch\t200\tExample Vendor\tExample Packager\texample-1.4.0-3.fc44.src.rpm\n"
 
 	got := parseRPMObjects(input)
 
@@ -19,7 +19,7 @@ func TestParseRPMObjects(t *testing.T) {
 		{
 			Name:     "bash",
 			Type:     "package",
-			Identity: "rpm:bash:x86_64",
+			Identity: "rpm:bash:0:5.3.0-2.fc44:x86_64",
 			Version:  "5.3.0-2.fc44",
 			Evidence: []model.Evidence{
 				{Type: "package_database", Value: "rpm"},
@@ -33,8 +33,8 @@ func TestParseRPMObjects(t *testing.T) {
 		{
 			Name:     "example",
 			Type:     "package",
-			Identity: "rpm:example:noarch",
-			Version:  "1.4.0-3.fc44",
+			Identity: "rpm:example:2:1.4.0-3.fc44:noarch",
+			Version:  "2:1.4.0-3.fc44",
 			Evidence: []model.Evidence{
 				{Type: "package_database", Value: "rpm"},
 				{Type: "architecture", Value: "noarch"},
@@ -53,9 +53,9 @@ func TestParseRPMObjects(t *testing.T) {
 
 func TestParseRPMObjectsSkipsMalformedRecords(t *testing.T) {
 	input := "" +
-		"good\t1.0\t1\tx86_64\t100\tVendor\tPackager\tgood-1.0-1.src.rpm\n" +
+		"good\t0\t1.0\t1\tx86_64\t100\tVendor\tPackager\tgood-1.0-1.src.rpm\n" +
 		"broken\n" +
-		"\t1.0\t1\tx86_64\t100\tVendor\tPackager\tbad.src.rpm\n"
+		"\t0\t1.0\t1\tx86_64\t100\tVendor\tPackager\tbad.src.rpm\n"
 
 	got := parseRPMObjects(input)
 
@@ -74,7 +74,7 @@ func TestRPMCollectorUsesPackageDatabaseQuery(t *testing.T) {
 			gotArgs = append([]string(nil), args...)
 
 			return []byte(
-				"bash\t5.3.0\t2.fc44\tx86_64\t100\tFedora Project\tFedora Project\tbash-5.3.0-2.fc44.src.rpm\n",
+				"bash\t0\t5.3.0\t2.fc44\tx86_64\t100\tFedora Project\tFedora Project\tbash-5.3.0-2.fc44.src.rpm\n",
 			), nil
 		},
 	}
@@ -88,14 +88,14 @@ func TestRPMCollectorUsesPackageDatabaseQuery(t *testing.T) {
 	wantArgs := []string{
 		"-qa",
 		"--qf",
-		"%{NAME}\\t%{VERSION}\\t%{RELEASE}\\t%{ARCH}\\t%{INSTALLTIME}\\t%{VENDOR}\\t%{PACKAGER}\\t%{SOURCERPM}\\n",
+		"%{NAME}\\t%{EPOCHNUM}\\t%{VERSION}\\t%{RELEASE}\\t%{ARCH}\\t%{INSTALLTIME}\\t%{VENDOR}\\t%{PACKAGER}\\t%{SOURCERPM}\\n",
 	}
 
 	if !reflect.DeepEqual(gotArgs, wantArgs) {
 		t.Fatalf("args differ\n got: %#v\nwant: %#v", gotArgs, wantArgs)
 	}
 
-	if len(objects) != 1 || objects[0].Identity != "rpm:bash:x86_64" {
+	if len(objects) != 1 || objects[0].Identity != "rpm:bash:0:5.3.0-2.fc44:x86_64" {
 		t.Fatalf("unexpected objects: %#v", objects)
 	}
 }
