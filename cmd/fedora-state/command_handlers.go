@@ -16,9 +16,7 @@ func realHandlers() map[string]commands.Handler {
 			return nil
 		},
 
-		commands.Manifest: func(ctx commands.Context) error {
-			return nil
-		},
+		commands.Manifest: runManifest,
 
 		commands.Plan: func(ctx commands.Context) error {
 			return nil
