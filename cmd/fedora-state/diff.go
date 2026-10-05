@@ -29,18 +29,61 @@ func runDiff(
 		ctx.System,
 	)
 
-	for _, object := range result.Added {
-		fmt.Printf(
-			"+ %s\n",
-			object.Name,
-		)
+	if len(result.Added) == 0 &&
+		len(result.Removed) == 0 {
+		return nil
 	}
 
-	for _, object := range result.Removed {
-		fmt.Printf(
-			"- %s\n",
-			object.Name,
-		)
+	if len(result.Added) > 0 {
+		fmt.Println("ADDED")
+		fmt.Println()
+
+		for _, object := range result.Added {
+			fmt.Printf(
+				"+ %s\n",
+				object.Type,
+			)
+
+			fmt.Printf(
+				"  name: %s\n",
+				object.Name,
+			)
+
+			if object.Version != "" {
+				fmt.Printf(
+					"  version: %s\n",
+					object.Version,
+				)
+			}
+
+			fmt.Println()
+		}
+	}
+
+	if len(result.Removed) > 0 {
+		fmt.Println("REMOVED")
+		fmt.Println()
+
+		for _, object := range result.Removed {
+			fmt.Printf(
+				"- %s\n",
+				object.Type,
+			)
+
+			fmt.Printf(
+				"  name: %s\n",
+				object.Name,
+			)
+
+			if object.Version != "" {
+				fmt.Printf(
+					"  version: %s\n",
+					object.Version,
+				)
+			}
+
+			fmt.Println()
+		}
 	}
 
 	return nil
