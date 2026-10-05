@@ -6,8 +6,8 @@ import (
 	"fedora-state/internal/plan"
 )
 
-func TestRun(t *testing.T) {
-	result, err := Run(plan.Plan{
+func TestDryRun(t *testing.T) {
+	result, err := DryRun(plan.Plan{
 		Actions: []plan.Action{
 			{
 				Type:     "add",
