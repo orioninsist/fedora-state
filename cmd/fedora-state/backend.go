@@ -1,9 +1,19 @@
 package main
 
-import "fedora-state/internal/executor"
+import (
+	"fedora-state/internal/executor"
+	"fedora-state/internal/executor/providers"
+)
 
 func newExecutorEngine() executor.Engine {
+
+	registry := providers.NewDefaultRegistry()
+
+	backend := executor.NewRouterBackend(
+		registry,
+	)
+
 	return executor.NewEngine(
-		executor.NewRealDNFBackend(),
+		backend,
 	)
 }
