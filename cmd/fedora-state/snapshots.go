@@ -32,21 +32,39 @@ func runSnapshots(
 		return err
 	}
 
-	var names []string
+	sort.Slice(
+		entries,
+		func(i, j int) bool {
+			return entries[i].Name() < entries[j].Name()
+		},
+	)
+
+	fmt.Println("Snapshots:")
 
 	for _, entry := range entries {
-		if filepath.Ext(entry.Name()) == ".json" {
-			names = append(
-				names,
-				entry.Name(),
-			)
+
+		if filepath.Ext(entry.Name()) != ".json" {
+			continue
 		}
-	}
 
-	sort.Strings(names)
+		info, err := entry.Info()
 
-	for _, name := range names {
-		fmt.Println(name)
+		if err != nil {
+			return err
+		}
+
+		label := ""
+
+		if entry.Name() == "latest.json" {
+			label = " latest"
+		}
+
+		fmt.Printf(
+			"%s\t%d bytes%s\n",
+			entry.Name(),
+			info.Size(),
+			label,
+		)
 	}
 
 	return nil
