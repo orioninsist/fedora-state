@@ -18,6 +18,9 @@ func main() {
 	resolver := rpm.NewRPMOwnershipResolver()
 	system.Objects = resolver.Resolve(system.Objects)
 
+	provenance := rpm.NewDNFProvenanceResolver()
+	system.Objects = provenance.Resolve(system.Objects)
+
 	fmt.Printf(
 		"os=%s architecture=%s distribution=%s objects=%d\n",
 		system.OS,
