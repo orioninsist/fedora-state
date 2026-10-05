@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"fedora-state/cmd/fedora-state/commands"
@@ -39,8 +40,18 @@ func runRestore(
 		target,
 	)
 
-	return plan.WriteJSON(
-		os.Stdout,
-		value,
+	engine := newExecutorEngine()
+
+	result, err := engine.Apply(value)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf(
+		"executed=%d\n",
+		result.Executed,
 	)
+
+	return nil
 }
