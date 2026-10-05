@@ -1,9 +1,10 @@
-package discovery
+package rpm
 
 import (
 	"os/exec"
 	"strings"
 
+	"fedora-state/internal/discovery"
 	"fedora-state/internal/model"
 )
 
@@ -19,7 +20,7 @@ func NewRPMCollector() RPMCollector {
 	}
 }
 
-func (collector RPMCollector) Collect() Collection {
+func (collector RPMCollector) Collect() discovery.Collection {
 	command := collector.command
 	if command == nil {
 		command = NewRPMCollector().command
@@ -32,10 +33,10 @@ func (collector RPMCollector) Collect() Collection {
 		"%{NAME}\\t%{EPOCHNUM}\\t%{VERSION}\\t%{RELEASE}\\t%{ARCH}\\t%{INSTALLTIME}\\t%{VENDOR}\\t%{PACKAGER}\\t%{SOURCERPM}\\n",
 	)
 	if err != nil {
-		return Collection{Err: err}
+		return discovery.Collection{Err: err}
 	}
 
-	return Collection{Objects: parseRPMObjects(string(output))}
+	return discovery.Collection{Objects: parseRPMObjects(string(output))}
 }
 
 func parseRPMObjects(input string) []model.Object {

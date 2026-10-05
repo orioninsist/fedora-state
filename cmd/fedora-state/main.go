@@ -4,17 +4,18 @@ import (
 	"fmt"
 
 	"fedora-state/internal/discovery"
+	"fedora-state/internal/providers/rpm"
 )
 
 func main() {
 	engine := discovery.NewWithCollectors(
 		discovery.BinaryCollector{},
-		discovery.NewRPMCollector(),
+		rpm.NewRPMCollector(),
 	)
 
 	system := engine.Analyze()
 
-	resolver := discovery.NewRPMOwnershipResolver()
+	resolver := rpm.NewRPMOwnershipResolver()
 	system.Objects = resolver.Resolve(system.Objects)
 
 	fmt.Printf(
