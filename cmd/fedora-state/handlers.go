@@ -3,14 +3,13 @@ package main
 import (
 	"os"
 
-	"fedora-state/internal/discovery"
 	"fedora-state/internal/manifest"
-	"fedora-state/internal/report"
+	"fedora-state/internal/model"
 
 	"fedora-state/cmd/fedora-state/commands"
 )
 
-func commandHandlers(system discovery.System, home string) map[string]commands.Handler {
+func commandHandlers(system model.System, home string) map[string]commands.Handler {
 	return map[string]commands.Handler{
 		commands.Help: func(commands.Context) error {
 			printHelp()
