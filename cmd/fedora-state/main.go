@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"fedora-state/internal/discovery"
+	"fedora-state/internal/hash"
+	"fedora-state/internal/persistence"
 	"fedora-state/internal/providers/cargo"
 	"fedora-state/internal/providers/rpm"
 	"fedora-state/internal/providers/uv"
@@ -32,6 +34,28 @@ func main() {
 
 	provenance := rpm.NewDNFProvenanceResolver()
 	system.Objects = provenance.Resolve(system.Objects)
+
+	stateHash, err := hash.State(system)
+	if err != nil {
+		panic(err)
+	}
+
+	stateHashPath := filepath.Join(home, ".local", "state", "fedora-state.hash")
+
+	oldHash, err := persistence.LoadHash(stateHashPath)
+	if err != nil && !os.IsNotExist(err) {
+		panic(err)
+	}
+
+	if persistence.Changed(oldHash, stateHash) {
+		if err := os.MkdirAll(filepath.Dir(stateHashPath), 0755); err != nil {
+			panic(err)
+		}
+
+		if err := persistence.SaveHash(stateHashPath, stateHash); err != nil {
+			panic(err)
+		}
+	}
 
 	format := "text"
 	if len(os.Args) > 1 {
