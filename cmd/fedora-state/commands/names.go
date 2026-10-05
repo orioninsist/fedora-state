@@ -8,4 +8,5 @@ const (
 	Manifest = "manifest"
 	Snapshot = "snapshot"
 	Snapshots = "snapshots"
+	Diff = "diff"
 )
