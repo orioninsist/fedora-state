@@ -20,8 +20,6 @@ func realHandlers() map[string]commands.Handler {
 
 		commands.Plan: runPlan,
 
-		commands.Apply: func(ctx commands.Context) error {
-			return nil
-		},
+		commands.Apply: runApplyCommand,
 	}
 }
