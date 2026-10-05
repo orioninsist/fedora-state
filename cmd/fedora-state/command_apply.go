@@ -27,7 +27,9 @@ func runApplyCommand(ctx commands.Context) error {
 
 	value := plan.Build(old, current)
 
-	_ = applyPlan(value)
+	if _, err := applyPlan(value); err != nil {
+		return err
+	}
 
 	return persistence.SaveManifest(
 		filepath.Join(
