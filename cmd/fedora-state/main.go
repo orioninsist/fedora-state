@@ -65,9 +65,12 @@ func main() {
 		})
 	}
 
+	runtimeConfig := loadRuntimeConfig(home)
+
 	if err := commands.Dispatch(
 		format,
 		commands.Context{
+			Config: runtimeConfig,
 			Args:   os.Args[2:],
 			Home:   home,
 			System: system,
