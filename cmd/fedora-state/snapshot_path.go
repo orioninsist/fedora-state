@@ -1,18 +1,20 @@
 package main
 
-import "path/filepath"
+import (
+	"path/filepath"
+
+	"fedora-state/internal/config"
+)
 
 func resolveSnapshotPath(
 	home string,
+	cfg config.Config,
 	arg string,
 ) string {
 
-	dir := filepath.Join(
+	dir := snapshotDirectory(
 		home,
-		".local",
-		"share",
-		"fedora-state",
-		"snapshots",
+		cfg,
 	)
 
 	if arg == "latest" {

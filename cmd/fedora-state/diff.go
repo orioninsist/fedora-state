@@ -17,7 +17,7 @@ func runDiff(
 	}
 
 	old, err := persistence.LoadSnapshot(
-		resolveSnapshotPath(ctx.Home, ctx.Args[0]),
+		resolveSnapshotPath(ctx.Home, ctx.Config, ctx.Args[0]),
 	)
 
 	if err != nil {

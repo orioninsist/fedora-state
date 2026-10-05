@@ -21,6 +21,7 @@ func runRestore(
 	snapshot, err := persistence.LoadSnapshot(
 		resolveSnapshotPath(
 			ctx.Home,
+			ctx.Config,
 			ctx.Args[0],
 		),
 	)
