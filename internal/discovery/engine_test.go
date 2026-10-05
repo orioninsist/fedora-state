@@ -3,7 +3,19 @@ package discovery
 import (
 	"reflect"
 	"testing"
+
+	"fedora-state/internal/model"
 )
+
+type staticCollector struct {
+	objects []model.Object
+}
+
+func (collector staticCollector) Collect() Collection {
+	return Collection{
+		Objects: collector.objects,
+	}
+}
 
 func TestAnalyzeCurrentSystem(t *testing.T) {
 	system := NewWithCollectors(BinaryCollector{}).Analyze()
@@ -37,5 +49,52 @@ func TestAnalyzeIsDeterministic(t *testing.T) {
 
 	if !reflect.DeepEqual(first, second) {
 		t.Error("consecutive discovery results differ")
+	}
+}
+
+func TestAnalyzeCorrelatesExecutableWithPackage(t *testing.T) {
+	collectors := NewWithCollectors(
+		staticCollector{
+			objects: []model.Object{
+				{
+					Name:     "tool",
+					Type:     "executable",
+					Location: "/usr/bin/tool",
+				},
+				{
+					Name:     "tool",
+					Type:     "package",
+					Identity: "rpm:tool:0:1.0-1:x86_64",
+					Evidence: []model.Evidence{
+						{
+							Type:  "executable_path",
+							Value: "/usr/bin/tool",
+						},
+					},
+				},
+			},
+		},
+	)
+
+	system := collectors.Analyze()
+
+	if len(system.Objects) != 2 {
+		t.Fatalf("objects=%d want 2", len(system.Objects))
+	}
+
+	found := false
+
+	for _, evidence := range system.Objects[0].Evidence {
+		if evidence.Type == "package_identity" &&
+			evidence.Value == "rpm:tool:0:1.0-1:x86_64" {
+			found = true
+		}
+	}
+
+	if !found {
+		t.Fatalf(
+			"missing package correlation: %+v",
+			system.Objects[0].Evidence,
+		)
 	}
 }
