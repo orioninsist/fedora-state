@@ -6,5 +6,15 @@ import (
 )
 
 func applyPlan(value plan.Plan) (executor.Result, error) {
-	return newExecutorEngine().Apply(value)
+	return applyPlanWithEngine(
+		newExecutorEngine(),
+		value,
+	)
+}
+
+func applyPlanWithEngine(
+	engine executor.Engine,
+	value plan.Plan,
+) (executor.Result, error) {
+	return engine.Apply(value)
 }
