@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"fedora-state/internal/discovery"
 	"fedora-state/internal/providers/cargo"
@@ -32,7 +33,19 @@ func main() {
 	provenance := rpm.NewDNFProvenanceResolver()
 	system.Objects = provenance.Resolve(system.Objects)
 
-	if err := report.WriteText(os.Stdout, system); err != nil {
-		panic(err)
+	format := "text"
+	if len(os.Args) > 1 {
+		format = strings.TrimPrefix(os.Args[1], "--format=")
+	}
+
+	switch format {
+	case "json":
+		if err := report.WriteJSON(os.Stdout, system); err != nil {
+			panic(err)
+		}
+	default:
+		if err := report.WriteText(os.Stdout, system); err != nil {
+			panic(err)
+		}
 	}
 }
