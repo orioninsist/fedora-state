@@ -27,5 +27,7 @@ func (e Engine) Analyze() model.System {
 		}
 	}
 
+	system.Objects = Correlate(system.Objects)
+
 	return system
 }
