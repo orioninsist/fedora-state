@@ -7,4 +7,5 @@ const (
 	Apply    = "apply"
 	Manifest = "manifest"
 	Snapshot = "snapshot"
+	Snapshots = "snapshots"
 )
