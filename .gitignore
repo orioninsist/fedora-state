@@ -1,5 +1,5 @@
 # binaries
-fedora-state
+/fedora-state
 *.bin
 
 # generated state
