@@ -4,7 +4,13 @@ Fedora system state discovery and reproducibility engine.
 
 ## Purpose
 
-Discover installed tools and packages from a Fedora system, generate a verified state report, and reproduce the environment on another Fedora installation.
+`fedora-state` discovers the software state of a Fedora system and creates a reproducible model that can be inspected and applied on another Fedora installation.
+
+It answers:
+
+- What is installed on this system?
+- Which packages and tools exist?
+- How can this environment be recreated?
 
 ## Current Status
 
@@ -30,7 +36,31 @@ go test ./...
 go vet ./...
 ```
 
+## Installation
+
+### From source
+
+Requirements:
+
+- Fedora Linux
+- Go 1.26+
+
+Clone:
+
+```bash
+git clone https://github.com/orioninsist/fedora-state.git
+cd fedora-state
+```
+
+Run:
+
+```bash
+go run ./cmd/fedora-state
+```
+
 ## Usage
+
+Basic system report:
 
 ```bash
 fedora-state
@@ -42,14 +72,54 @@ Example output:
 os=linux architecture=amd64 distribution=Fedora Linux objects=4233 diagnostics=0
 ```
 
-Available formats:
+## Output formats
+
+Text output:
 
 ```bash
 fedora-state --format=text
+```
+
+JSON output:
+
+```bash
 fedora-state --format=json
+```
+
+Save JSON state:
+
+```bash
+fedora-state --format=json > state.json
+```
+
+Create manifest:
+
+```bash
 fedora-state --format=manifest
+```
+
+Generate execution plan:
+
+```bash
 fedora-state --format=plan
-fedora-state --format=apply
+```
+
+Apply planned changes:
+
+```bash
+sudo fedora-state --format=apply
+```
+
+Recommended workflow:
+
+```bash
+fedora-state --format=plan
+```
+
+Review the plan before applying:
+
+```bash
+sudo fedora-state --format=apply
 ```
 
 ## Architecture
