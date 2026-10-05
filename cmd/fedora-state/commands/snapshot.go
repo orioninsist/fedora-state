@@ -1,8 +1,10 @@
 package commands
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"fedora-state/internal/persistence"
 )
@@ -21,13 +23,30 @@ func WriteSnapshot(ctx Context) error {
 		return err
 	}
 
+	name := fmt.Sprintf(
+		"%s.json",
+		time.Now().Format("20060102-150405"),
+	)
+
 	path := filepath.Join(
 		dir,
-		"machine.json",
+		name,
+	)
+
+	if err := persistence.SaveSnapshot(
+		path,
+		ctx.System,
+	); err != nil {
+		return err
+	}
+
+	latest := filepath.Join(
+		dir,
+		"latest.json",
 	)
 
 	return persistence.SaveSnapshot(
-		path,
+		latest,
 		ctx.System,
 	)
 }
