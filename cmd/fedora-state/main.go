@@ -7,6 +7,7 @@ import (
 
 	"fedora-state/internal/discovery"
 	"fedora-state/internal/hash"
+	"fedora-state/internal/manifest"
 	"fedora-state/internal/persistence"
 	"fedora-state/internal/providers/cargo"
 	"fedora-state/internal/providers/rpm"
@@ -65,6 +66,11 @@ func main() {
 	switch format {
 	case "json":
 		if err := report.WriteJSON(os.Stdout, system); err != nil {
+			panic(err)
+		}
+	case "manifest":
+		state := manifest.FromSystem(system)
+		if err := manifest.WriteJSON(os.Stdout, state); err != nil {
 			panic(err)
 		}
 	default:
