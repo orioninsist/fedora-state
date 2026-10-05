@@ -37,3 +37,34 @@ func TestDiffAddsMissingManifestEntry(t *testing.T) {
 		t.Fatalf("got=%#v want=%#v", got, want)
 	}
 }
+
+func TestDiffRemovesMissingManifestEntry(t *testing.T) {
+	old := manifest.Manifest{
+		Entries: []manifest.Entry{
+			{
+				Identity: "rpm:vim:0:1.0-1:x86_64",
+				Name:     "vim",
+				Type:     "package",
+			},
+		},
+	}
+
+	newer := manifest.Manifest{
+		Entries: []manifest.Entry{},
+	}
+
+	got := Diff(old, newer)
+
+	want := Plan{
+		Actions: []Action{
+			{
+				Type:     "remove",
+				Identity: "rpm:vim:0:1.0-1:x86_64",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("got=%#v want=%#v", got, want)
+	}
+}
