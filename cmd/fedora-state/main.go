@@ -9,6 +9,7 @@ import (
 	"fedora-state/internal/hash"
 	"fedora-state/internal/manifest"
 	"fedora-state/internal/persistence"
+	"fedora-state/internal/plan"
 	"fedora-state/internal/providers/cargo"
 	"fedora-state/internal/providers/rpm"
 	"fedora-state/internal/providers/uv"
@@ -61,6 +62,23 @@ func main() {
 	format := "text"
 	if len(os.Args) > 1 {
 		format = strings.TrimPrefix(os.Args[1], "--format=")
+	}
+
+	if format == "plan" {
+		current := manifest.FromSystem(system)
+		old, err := persistence.LoadManifest(
+			filepath.Join(home, ".local", "state", "fedora-state-manifest.json"),
+		)
+		if err != nil && !os.IsNotExist(err) {
+			panic(err)
+		}
+
+		value := plan.Build(old, current)
+
+		if err := plan.WriteJSON(os.Stdout, value); err != nil {
+			panic(err)
+		}
+		return
 	}
 
 	switch format {
