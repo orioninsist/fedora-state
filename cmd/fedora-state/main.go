@@ -64,7 +64,7 @@ func main() {
 		format = strings.TrimPrefix(os.Args[1], "--format=")
 	}
 
-	if format == "plan" {
+	if format == "plan" || format == "apply" {
 		current := manifest.FromSystem(system)
 		old, err := persistence.LoadManifest(
 			filepath.Join(home, ".local", "state", "fedora-state-manifest.json"),
@@ -74,6 +74,18 @@ func main() {
 		}
 
 		value := plan.Build(old, current)
+
+		if format == "apply" {
+			result := applyPlan(value)
+			if err := persistence.SaveManifest(
+				filepath.Join(home, ".local", "state", "fedora-state-manifest.json"),
+				current,
+			); err != nil {
+				panic(err)
+			}
+			_ = result
+			return
+		}
 
 		if err := plan.WriteJSON(os.Stdout, value); err != nil {
 			panic(err)
