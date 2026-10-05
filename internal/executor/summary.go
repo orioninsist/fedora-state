@@ -7,7 +7,7 @@ import (
 )
 
 func Summary(value plan.Plan) string {
-	result, err := Run(value)
+	result, err := DryRun(value)
 
 	if err != nil {
 		return fmt.Sprintf(
