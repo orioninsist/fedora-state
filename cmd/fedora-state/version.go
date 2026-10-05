@@ -2,8 +2,17 @@ package main
 
 import "fmt"
 
-const version = "0.1.0"
+var (
+	Version   = "dev"
+	Commit    = "unknown"
+	BuildDate = "unknown"
+)
 
 func printVersion() {
-	fmt.Println(version)
+	fmt.Printf(
+		"fedora-state %s\ncommit: %s\nbuilt: %s\n",
+		Version,
+		Commit,
+		BuildDate,
+	)
 }
