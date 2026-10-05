@@ -42,7 +42,7 @@ func (collector RPMCollector) Collect() discovery.Collection {
 func parseRPMObjects(input string) []model.Object {
 	var result []model.Object
 
-	for line := range strings.SplitSeq(input, "\n") {
+	for _, line := range strings.Split(input, "\n") {
 		if line == "" {
 			continue
 		}
