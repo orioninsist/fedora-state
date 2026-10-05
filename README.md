@@ -52,19 +52,21 @@ git clone https://github.com/orioninsist/fedora-state.git
 cd fedora-state
 ```
 
-Run:
+## First Run
+
+During development, run directly with Go:
 
 ```bash
 go run ./cmd/fedora-state
 ```
 
-## Usage
-
-Basic system report:
+Normal installed usage:
 
 ```bash
 fedora-state
 ```
+
+The first command only discovers your current system. It does not modify anything.
 
 Example output:
 
@@ -72,39 +74,51 @@ Example output:
 os=linux architecture=amd64 distribution=Fedora Linux objects=4233 diagnostics=0
 ```
 
-## Output formats
+## Command Usage
 
-Text output:
+The program has one command with different output modes.
+
+### Text report
+
+```bash
+go run ./cmd/fedora-state --format=text
+```
+
+or after installation:
 
 ```bash
 fedora-state --format=text
 ```
 
-JSON output:
+### JSON export
+
+Create a machine-readable snapshot:
 
 ```bash
-fedora-state --format=json
+go run ./cmd/fedora-state --format=json > state.json
 ```
 
-Save JSON state:
+### Manifest generation
+
+Create the current system manifest:
 
 ```bash
-fedora-state --format=json > state.json
+go run ./cmd/fedora-state --format=manifest > manifest.json
 ```
 
-Create manifest:
+### Plan generation
+
+See what changes would be required:
 
 ```bash
-fedora-state --format=manifest
+go run ./cmd/fedora-state --format=plan > plan.json
 ```
 
-Generate execution plan:
+Always review the plan before applying changes.
 
-```bash
-fedora-state --format=plan
-```
+### Apply changes
 
-Apply planned changes:
+Apply requires administrator privileges because it can call system package operations:
 
 ```bash
 sudo fedora-state --format=apply
@@ -113,14 +127,31 @@ sudo fedora-state --format=apply
 Recommended workflow:
 
 ```bash
-fedora-state --format=plan
-```
+1. Discover current state
 
-Review the plan before applying:
+go run ./cmd/fedora-state --format=json > state.json
 
-```bash
+2. Generate and inspect plan
+
+go run ./cmd/fedora-state --format=plan > plan.json
+
+3. Apply only after review
+
 sudo fedora-state --format=apply
 ```
+
+## Important
+
+`fedora-state` is not a backup tool.
+
+It does not manage:
+
+- dotfiles
+- personal configuration
+- user data
+- accounts
+
+It focuses on reproducible software state.
 
 ## Architecture
 
@@ -147,25 +178,6 @@ internal/executor
              +-- Real DNF backend
              +-- Dry run backend
 ```
-
-## Scope
-
-Included:
-
-- package discovery
-- source detection
-- verification
-- restore workflow
-- system reports
-- reproducible execution planning
-
-Excluded:
-
-- dotfiles
-- personal configuration
-- backups
-- user data
-- accounts
 
 ## Development
 
