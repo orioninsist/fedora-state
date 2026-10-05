@@ -74,11 +74,6 @@ func parseRPMObjects(input string) []model.Object {
 			versionID = epoch + ":" + versionID
 		}
 
-		identityEpoch := epoch
-		if identityEpoch == "" || identityEpoch == "(none)" {
-			identityEpoch = "0"
-		}
-
 		evidence := []model.Evidence{
 			{
 				Type:  "package_database",
@@ -101,11 +96,20 @@ func parseRPMObjects(input string) []model.Object {
 		result = append(result, model.Object{
 			Name:     name,
 			Type:     "package",
-			Identity: "rpm:" + name + ":" + identityEpoch + ":" + version + "-" + release + ":" + architecture,
+			Identity: rpmIdentity(name, epoch, version, release, architecture),
 			Version:  versionID,
 			Evidence: evidence,
 		})
 	}
 
 	return result
+}
+
+func rpmIdentity(name, epoch, version, release, architecture string) string {
+	if epoch == "" || epoch == "(none)" {
+		epoch = "0"
+	}
+
+	return "rpm:" + name + ":" + epoch + ":" +
+		version + "-" + release + ":" + architecture
 }

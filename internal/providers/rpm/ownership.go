@@ -49,7 +49,18 @@ func (resolver RPMOwnershipResolver) Resolve(objects []model.Object) []model.Obj
 	owner := ""
 	for _, line := range strings.Split(string(output), "\n") {
 		if strings.HasPrefix(line, "@@PKG@@\t") {
-			owner = strings.TrimPrefix(line, "@@PKG@@\t")
+			fields := strings.Split(strings.TrimPrefix(line, "@@PKG@@\t"), "\t")
+			if len(fields) == 5 {
+				owner = rpmIdentity(
+					fields[0],
+					fields[1],
+					fields[2],
+					fields[3],
+					fields[4],
+				)
+			} else {
+				owner = ""
+			}
 			continue
 		}
 		if owner == "" {
@@ -64,7 +75,7 @@ func (resolver RPMOwnershipResolver) Resolve(objects []model.Object) []model.Obj
 	for _, object := range objects {
 		if owner, ok := owners[object.Location]; ok {
 			object.Evidence = append(object.Evidence, model.Evidence{
-				Type:  "package_owner",
+				Type:  "package_identity",
 				Value: owner,
 			})
 		}
