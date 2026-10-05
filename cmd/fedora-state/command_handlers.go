@@ -31,6 +31,8 @@ func realHandlers() map[string]commands.Handler {
 
 		commands.Diff: runDiff,
 
+		commands.Restore: runRestore,
+
 		"text": func(ctx commands.Context) error {
 			return report.WriteText(os.Stdout, ctx.System)
 		},
