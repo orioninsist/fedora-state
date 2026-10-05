@@ -32,5 +32,9 @@ func realHandlers() map[string]commands.Handler {
 		"json": func(ctx commands.Context) error {
 			return report.WriteJSON(os.Stdout, ctx.System)
 		},
+
+		"markdown": func(ctx commands.Context) error {
+			return report.WriteMarkdown(os.Stdout, ctx.System)
+		},
 	}
 }

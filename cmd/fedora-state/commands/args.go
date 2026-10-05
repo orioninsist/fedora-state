@@ -10,6 +10,8 @@ func CommandFromArgs(args []string) string {
 		return "text"
 	case "json":
 		return "json"
+	case "markdown":
+		return "markdown"
 	default:
 		return Resolve(args[0])
 	}
