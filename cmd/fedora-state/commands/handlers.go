@@ -17,6 +17,5 @@ func HandlerMap() map[string]Handler {
 		Manifest: func(Context) error {
 			return nil
 		},
-		Snapshot: Snapshot,
 	}
 }
