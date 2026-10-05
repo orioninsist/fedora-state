@@ -27,6 +27,8 @@ func realHandlers() map[string]commands.Handler {
 
 		commands.Snapshot: runSnapshot,
 
+		commands.Snapshots: runSnapshots,
+
 		"text": func(ctx commands.Context) error {
 			return report.WriteText(os.Stdout, ctx.System)
 		},
