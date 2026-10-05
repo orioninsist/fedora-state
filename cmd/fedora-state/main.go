@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -9,6 +8,7 @@ import (
 	"fedora-state/internal/providers/cargo"
 	"fedora-state/internal/providers/rpm"
 	"fedora-state/internal/providers/uv"
+	"fedora-state/internal/report"
 )
 
 func main() {
@@ -32,11 +32,7 @@ func main() {
 	provenance := rpm.NewDNFProvenanceResolver()
 	system.Objects = provenance.Resolve(system.Objects)
 
-	fmt.Printf(
-		"os=%s architecture=%s distribution=%s objects=%d\n",
-		system.OS,
-		system.Architecture,
-		system.Metadata.Distribution,
-		len(system.Objects),
-	)
+	if err := report.WriteText(os.Stdout, system); err != nil {
+		panic(err)
+	}
 }
