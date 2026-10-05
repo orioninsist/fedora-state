@@ -13,12 +13,9 @@ func runSnapshots(
 	ctx commands.Context,
 ) error {
 
-	dir := filepath.Join(
+	dir := snapshotDirectory(
 		ctx.Home,
-		".local",
-		"share",
-		"fedora-state",
-		"snapshots",
+		ctx.Config,
 	)
 
 	entries, err := os.ReadDir(dir)
